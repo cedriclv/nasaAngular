@@ -1,33 +1,36 @@
 import { Component } from '@angular/core';
+import { ApiResponse } from './api-response';
 import { NasaService } from './nasa.service';
+import { Observable, throwError } from "rxjs";
+import { NasaObject } from "./nasa-object";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'nasa';
 
-
-  imageNasa: string = '';
+  imgOfTheDay: string = '';
   titleNasa: string = '';
   explanationNasa: string = '';
   dateNasa: string = '';
+  public nasaObject : NasaObject = new NasaObject('','','','','');
 
-  constructor(private nasaService: NasaService){}
+  constructor(private nasaService: NasaService) {}
 
-  ngOnInit(){
-    this.getImageOfTheDay();  
+  ngOnInit() {
+    this.getImageOfTheDay();
   }
 
-  getImageOfTheDay(){
-    this.nasaService.getImageOfTheDay().subscribe( 
-        dataFromNasa => { this.imageNasa = JSON.parse(JSON.stringify(dataFromNasa)).url,
-          this.dateNasa = JSON.parse(JSON.stringify(dataFromNasa)).date,
-          this.titleNasa = JSON.parse(JSON.stringify(dataFromNasa)).title,
-          this.explanationNasa = JSON.parse(JSON.stringify(dataFromNasa)).explanation
-        }
-      );
-  }  
+
+  getImageOfTheDay() {
+    let dataReceived : Observable<ApiResponse> = this.nasaService.getImageOfTheDay();    
+    dataReceived.subscribe( (response: ApiResponse) => {
+      {
+        this.nasaObject = response;
+      }
+    });
+  }
 }
